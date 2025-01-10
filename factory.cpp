@@ -55,6 +55,7 @@ public:
 void clientRequest(const Creator& creator) {
     std::cout << "I would like to receive a product. It can be made in any way, but has to fulfill my requirements\n";
     std::cout << creator.SomeOperation() << std::endl;
+    std::cout << "Received from the creator: " << creator.FactoryMethod()->Operation() << "\n"; // received the product
 }
 
 int main() {
