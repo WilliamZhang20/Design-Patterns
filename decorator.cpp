@@ -21,6 +21,7 @@ public:
         this->name = str;
     }
     void writeData(string str) {
+        // std::cout << "writing regular\n";
         data = str;
     }
     string readData() {
@@ -51,6 +52,7 @@ public:
     EncryptionDecorator(DataSource* src) : DataSourceDecorator(src) {}
     void writeData(string data) {
         reverse(data.begin(), data.end());
+        // std::cout << "writing for encryptor\n";
         wrapee_->writeData(data);
     }
     string readData() {
@@ -66,6 +68,7 @@ public:
     CompressionDecorator(DataSource* src) : DataSourceDecorator(src) {}
 
     void writeData(string data) {
+        // std::cout << "writing for compressor\n";
         std::string encoded = "";
         int count = 1;
         for (size_t i = 1; i <= data.size(); ++i) {
@@ -105,19 +108,42 @@ public:
 
     void configure(bool encrypt, bool compress) {
         if(encrypt) {
-            source_ = new DataSourceDecorator(source_);
+            source_ = new EncryptionDecorator(source_);
         }
 
         if(compress) {
-            source_ = new DataSourceDecorator(source_);
+            source_ = new CompressionDecorator(source_);
         }
     }
 
-    void load() {
+    string load() {
+        return source_->readData();
+    }
 
+    void save(string dt) {
+        source_->writeData(dt);
     }
 };
 
 int main() {
-    
+    FileSource* fileSource = new FileSource("salary_data.txt");
+
+    // Create the SalaryManager and configure it
+    SalaryManager salaryManager(fileSource);
+
+    // Saving without encryption or compression
+    salaryManager.save("50000");
+    std::cout << "Salary without encryption or compression: " 
+              << salaryManager.load() << std::endl;
+
+    // Now configure with encryption and compression
+    salaryManager.configure(true, true); // Enable both encryption and compression
+
+    // Saving with encryption and compression
+    salaryManager.save("50000");
+    std::cout << "Salary with encryption and compression: " 
+              << salaryManager.load() << std::endl;
+
+    // Clean up
+    delete fileSource;
 }
