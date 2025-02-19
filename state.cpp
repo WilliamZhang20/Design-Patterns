@@ -24,17 +24,37 @@ class State {
 		virtual void returnMoney() = 0;
 };
 
+class Idle : public State {
+public:
+    Idle(VendingMachine* machine_) : State(machine_) {}
+    void insertCoins() override;
+    void selectItem() override {
+        std::cout << "Insert cash first\n";
+    }
+    void dispenseItem() override {
+        std::cout << "Insert cash first\n";
+    }
+    void returnMoney() override {
+        std::cout << "Insert cash first\n";
+    }
+};
+
 class VendingMachine {	
+    friend class State;
 	State* state_;
 	double balance_;
-	std::vector<std::pair<std::string, int>> items_;
+	std::vector<std::pair<std::string, double>> items_;
 public:
+    VendingMachine(std::vector<std::pair<std::string, double>> items) : state_(new Idle(this)), items_(items) { }
+    ~VendingMachine() {
+        delete state_;
+    }
 	void dropItem(double idx) {
-			if(balance_ < items_[idx].second) {
-				throw "not enough balance";
-			} else {
-				balance_ -= items_[idx].second;
-			}
+        if(balance_ < items_[idx].second) {
+            throw "not enough balance";
+        } else {
+            balance_ -= items_[idx].second;
+        }
 	}
 	void addBalance() {
 		double coin;
@@ -43,14 +63,7 @@ public:
 		assert(coin > 0); // no way to take away money publicly
 		balance_ += coin;
 	}
-	VendingMachine(State* state, std::vector<std::pair<std::string, int>> items) : state_(nullptr), items_(items) {
-		this->changeState(state);
-	}
-	~VendingMachine() {
-		delete state_;
-	}
 	void changeState(State* state) {
-		std::cout << "Transition to " << typeid(*state).name() << ".\n"; 
 		if(this->state_ != nullptr) {
 			delete this->state_;
 		}
@@ -74,7 +87,7 @@ public:
 	std::string getItems() const {
 		std::string ret = "";
 		for(int i=0; i<items_.size(); i++) {
-			ret += items_[i].first;
+			ret += items_[i].first + "\n";
 		}
 		return ret;
 	}
@@ -82,24 +95,22 @@ public:
 		if(balance_ < 0) {
 			std::cout << "no money\n";
 		}
-		std::cout << "Here's " << balance_ << "back\n";
+		std::cout << "Here's " << balance_ << " back\n";
 		balance_ = 0;
 	}
-};
-
-class Idle : public State {
-public:
-    Idle(VendingMachine* machine_) : State(machine_) {}
-	void insertCoins() override;
-	void selectItem() override {
-		std::cout << "Insert cash first\n";
-	}
-	void dispenseItem() override {
-		std::cout << "Insert cash first\n";
-	}
-	void returnMoney() override {
-		std::cout << "Insert cash first\n";
-	}
+    // Actions:
+    void dispenseItem() {
+        state_->dispenseItem();
+    }
+    void selectItem() {
+        state_->selectItem();
+    }
+    void insertCoins() {
+        state_->insertCoins();
+    }
+    void returnMoney() {
+        state_->returnMoney();
+    }
 };
 
 class ProcessMoney : public State {
@@ -127,7 +138,7 @@ public:
     }
     void selectItem() override { // can always keep selecting items...
         std::string item;
-        std::cout << "Choose from: " << machine->getItems() << "\n";
+        std::cout << "Choose from: " << machine->getItems();
         std::cin >> item;
         selection = machine->checkItem(item);
         if(selection == -1) {
@@ -196,5 +207,39 @@ void Idle::insertCoins() {
 }
 
 int main() {
-	return 0;
+    std::vector<std::pair<std::string, double>> items;
+    std::string item;
+    double cost;
+    int num;
+    std::cout << "Enter items, starting with # of items\n";
+    std::cin >> num;
+    for(int i=0; i<num; i++) {
+        std::cin >> item >> cost;
+        items.push_back({item, cost});
+    }
+    
+    std::cout << "vending machine ready to use\n";
+    // INITIALIZATION
+	VendingMachine chips(items); // initialize chips machine with items
+    std::string command = "";
+    while(true) {
+        std::cin >> command;
+        if(command == "coins") {
+            chips.insertCoins();
+        }
+        else if(command == "select") {
+            chips.selectItem();
+        }
+        else if(command == "dispense") {
+            chips.dispenseItem();
+        }
+        else if(command == "return") {
+            chips.returnMoney();
+        }
+        else if(command == "EXIT") {
+            break;
+        }
+    }
+    std::cout << "The vending machine is now closed\n";
+    return 0;
 }
