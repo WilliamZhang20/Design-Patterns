@@ -1,51 +1,49 @@
 #include <iostream>
 #include <string>
+// Resource: https://stackoverflow.com/questions/7876168/using-the-visitor-pattern-with-template-derived-classes
 
-class Lion;
-class Elephant;
-class Monkey;
+class BaseVisitor {
+    public:
+        virtual ~BaseVisitor() {};
+};
 
-// Visitor base class template (CRTP style)
+// Visitor base template class
 template <typename T>
 class AnimalVisitor {
 public:
-    virtual void visit(Lion& lion) = 0;
-    virtual void visit(Elephant& elephant) = 0;
-    virtual void visit(Monkey& monkey) = 0;
-    virtual ~AnimalVisitor() = default;
+    virtual void visit(T&) = 0;
 };
 
-// Abstract base class for animals (CRTP style)
-template <typename Derived>
-class Animal {
+// Abstract base class for animals
+template <typename Animal>
+class BaseAnimal {
 public:
-    virtual ~Animal() = default;
-    // Accept the visitor
-    virtual void accept(AnimalVisitor& visitor) = 0;
-};
-
-class Lion : public Animal<Lion> {
-public:
-    void accept(AnimalVisitor& visitor) override {
-        visitor.visit(*this);
+    // This accept function upcasts to the base animal so it can work with any animal type
+    template <typename T>
+    void accept(T& visitor) {
+        visitor.visit(static_cast<Animal&>(*this)); // upcast then visit!
     }
+};
+
+class Lion : public BaseAnimal<Lion> {
+public:
     void roar() const {
         std::cout << "Lion is roaring!" << std::endl;
     }
 };
 
-class Elephant : public Animal<Elephant> {
+class Elephant : public BaseAnimal<Elephant> {
 public:
-    void accept(AnimalVisitor& visitor) override {
-        visitor.visit(*this);
-    }
     void trumpet() const {
         std::cout << "Elephant is trumpeting!" << std::endl;
     }
 };
 
 // Visitor that calculates food consumption
-class FoodConsumptionVisitor : public AnimalVisitor<FoodConsumptionVisitor> {
+// Multiple inheritance used to define visitor interfaces for all visited objects
+class FoodConsumptionVisitor : public BaseVisitor,
+                               public AnimalVisitor<Lion>,
+                               public AnimalVisitor<Elephant> {
 public:
     void visit(Lion& lion) override {
         std::cout << "Lion eats 10kg of meat per day." << std::endl;
@@ -57,7 +55,10 @@ public:
 };
 
 // Visitor that calculates habitat size
-class HabitatSizeVisitor : public AnimalVisitor<HabitatSizeVisitor> {
+// Possible alternatives to multiple inheritance include composition of interfaces & type traits 
+class HabitatSizeVisitor : public BaseVisitor,
+                           public AnimalVisitor<Lion>,
+                           public AnimalVisitor<Elephant>  {
 public:
     void visit(Lion& lion) override {
         std::cout << "Lion needs 100 square meters of habitat." << std::endl;
