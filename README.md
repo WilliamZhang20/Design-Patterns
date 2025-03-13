@@ -11,11 +11,11 @@ Ensures that only one instance of a class exists, such as in the case of a gover
 
 Introduces flexible object creation for different class requirements. This is done by defining an abstract class for the created object, aka a product. The actual products will inherit from the abstract product. To create different products, the client will call methods of different 'factories'. These factory classes all inherit from an abstract factory. 
 
-3. Adapter Design Pattern
+:electric_plug: Adapter Design Pattern
 
 Provides a wrapper to convert one interface into another, such as a legacy to a new, or more simply, a round peg to a square hole. This wrapper inherits extends the desired/target interface and internally calls the adaptee's interface. For example, in square pegs and circular holes, the adapter calls width of a square when the radius of a desired circule is called.
 
-4. Observer Design Pattern
+:eyes: Observer Design Pattern
 
 Allows one object (the subject) to notify multiple dependent objects (observers) about state changes. The subject maintains a list of observers and provides methods to attach or detach them. When the subject's state changes, it triggers the update method of all registered observers. This pattern is commonly used in scenarios where a change in one object requires updates in many others, such as in event-driven systems like infotainment. It promotes loose coupling between the subject and its observers.
 
