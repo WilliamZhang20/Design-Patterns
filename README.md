@@ -2,7 +2,7 @@
 
 Practicing useful software design patterns in C++.
 
-Current list:
+## Table of Contents
 
 ### :one: Singleton Design Pattern
 
@@ -61,4 +61,8 @@ For example, an iterator for a list would allow the client to access each elemen
 
 ### :rocket: Curiously Recurring Template Pattern (CRTP)
 
-The Curiously Recurring Template Pattern (CRTP) is a C++ idiom where a class X inherits from a template class that is parameterized with X itself. This pattern allows a class to gain behavior from a base class template while still being able to specialize the behavior for itself. CRTP can be used for compile-time polymorphism, enabling highly efficient code by eliminating the need for virtual function calls. It is often used in situations where static polymorphism or mixins are desired.
+The Curiously Recurring Template Pattern (CRTP) is a C++ idiom where a class X inherits from a template class that is parameterized with X itself. This pattern allows a class to gain behavior from a base class template while still being able to specialize the behavior for itself. CRTP can be used for compile-time polymorphism, enabling highly efficient code by eliminating the need for virtual function calls. Because there are 
+
+### :construction_worker: Builder Design Pattern
+
+The Builder Design Pattern separates the construction of a complex object from its representation, allowing the same construction process to create different representations. It provides a step-by-step approach to constructing an object, ensuring that the object is assembled in a consistent and controlled manner. The pattern is useful when an object requires multiple steps to be fully constructed or when you need to create different variations of an object using the same building process. The builder class contains functions to set different parameters, and the director provides methods of pre-decided steps for constructing certain products.
