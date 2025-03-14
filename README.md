@@ -4,6 +4,21 @@ Practicing useful software design patterns in C++.
 
 ## Table of Contents
 
+- [Singleton Design Pattern](#singleton-design-pattern-1)
+- [Factory Method](#factory-method)
+- [Adapter Design Pattern](#adapter-design-pattern)
+- [Observer Design Pattern](#observer-design-pattern)
+- [Mediator Design Pattern](#mediator-design-pattern)
+- [Decorator Design Pattern](#decorator-design-pattern)
+- [Strategy Design Pattern](#strategy-design-pattern)
+- [Visitor Design Pattern](#visitor-design-pattern)
+- [State Design Pattern](#state-design-pattern)
+- [Command Design Pattern](#command-design-pattern)
+- [Template Method Design Pattern](#template-method-design-pattern)
+- [Iterator Design Pattern](#iterator-design-pattern)
+- [Curiously Recurring Template Pattern (CRTP)](#curiously-recurring-template-pattern-crtp)
+- [Builder Design Pattern](#builder-design-pattern)
+
 ### :one: Singleton Design Pattern
 
 Ensures that only one instance of a class exists, such as in the case of a government, a gaming engine, or a company name, etc. It is implemented by maintaining the only instance as a private and static member which can only be accessed via a static method. The constructor is also kept private. To ensure thread safety against copying, the accessibility of the singleton instance is locked with a mutex. 
@@ -61,7 +76,7 @@ For example, an iterator for a list would allow the client to access each elemen
 
 ### :rocket: Curiously Recurring Template Pattern (CRTP)
 
-The Curiously Recurring Template Pattern (CRTP) is a C++ idiom where a class X inherits from a template class that is parameterized with X itself. This pattern allows a class to gain behavior from a base class template while still being able to specialize the behavior for itself. CRTP can be used for compile-time polymorphism, enabling highly efficient code by eliminating the need for virtual function calls. Because there are 
+The Curiously Recurring Template Pattern (CRTP) is a C++ idiom where a class X inherits from a template class that is parameterized with X itself. This pattern allows a class to gain behavior from a base class template while still being able to specialize the behavior for itself. CRTP can be used for compile-time polymorphism, enabling highly efficient code by eliminating the need for virtual function calls. Because there are so many variations of CRTP, an entire folder was dedicated to exploring them all. This included CRTP in which the child class does not implement the a base-implemented function, reducing class sizes in the polymorphism-heavy visitor design pattern with CRTP, and more to come!
 
 ### :construction_worker: Builder Design Pattern
 
