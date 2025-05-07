@@ -1,70 +1,70 @@
 #include <iostream>
 
 // base operations of all concrete products
-class Product {
+class Notification {
 public:
-    virtual ~Product() {}
-    virtual std::string Operation() const = 0; // made abstract
+    virtual ~Notification() {}
+    virtual std::string send() const = 0; // made abstract
 };
 
 // concrete products to implement variations of the product
-class ConcreteProduct1 : public Product {
+class EmailNotification : public Notification {
 public:
-    std::string Operation() const override {
-        return "{Result of concrete product 1}";
+    std::string send() const override {
+        return "Sending Email";
     }
 };
 
-class ConcreteProduct2 : public Product {
+class SMSNotification : public Notification {
 public:
-    std::string Operation() const override {
-        return "{Result of concrete product 2}";
+    std::string send() const override {
+        return "Sending SMS";
     }
 };
 
 // creator factory returns object of the product, delegates different creators
-class Creator { // also abstract...in correspondence with the product
+class NotificationFactory { // also abstract...in correspondence with the product
 public:
-    virtual ~Creator() {}
-    virtual Product* FactoryMethod() const = 0;
+    virtual ~NotificationFactory() {}
+    virtual Notification* FactoryMethod() const = 0;
 
-    std::string SomeOperation() const {
-        Product* product = this->FactoryMethod();
+    std::string Send() const {
+        Notification* msg = this->FactoryMethod();
         // use the product
-        std::string result = "Creator: the creator's code has just worked with " + product->Operation();
-        delete product;
+        std::string result = "Creator: the creator's code has just worked with " + msg->send();
+        delete msg;
         return result;
     }
 };
 
-class ConcreteCreator1 : public Creator {
+class Email_Sender : public NotificationFactory {
 public:
-    Product* FactoryMethod() const override { // returns an abstracted general product, ensures independence between creator & product
-        return new ConcreteProduct1();
+    Notification* FactoryMethod() const override { // returns an abstracted general product, ensures independence between creator & product
+        return new EmailNotification();
     }
 };
 
 
-class ConcreteCreator2 : public Creator {
+class SMS_Sender : public NotificationFactory {
 public:
-    Product* FactoryMethod() const override {
-        return new ConcreteProduct2();
+    Notification* FactoryMethod() const override {
+        return new SMSNotification();
     }
 };
 
-void clientRequest(const Creator& creator) {
+void clientRequest(const NotificationFactory& creator) {
     std::cout << "I would like to receive a product. It can be made in any way, but has to fulfill my requirements\n";
-    std::cout << creator.SomeOperation() << std::endl;
-    std::cout << "Received from the creator: " << creator.FactoryMethod()->Operation() << "\n"; // received the product
+    std::cout << creator.Send() << std::endl;
+    std::cout << "Received from the creator: " << creator.FactoryMethod()->send() << "\n"; // received the product
 }
 
 int main() {
     std::cout << "App: Launched with the ConcreteCreator1.\n";
-    Creator* creator = new ConcreteCreator1();
+    NotificationFactory* creator = new Email_Sender();
     clientRequest(*creator);
     std::cout << std::endl;
     std::cout << "App: Launched with the ConcreteCreator2.\n";
-    Creator* creator2 = new ConcreteCreator2();
+    NotificationFactory* creator2 = new SMS_Sender();
     clientRequest(*creator2);
 
     delete creator;
