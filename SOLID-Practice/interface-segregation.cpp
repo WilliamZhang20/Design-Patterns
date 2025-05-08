@@ -15,7 +15,8 @@ public:
     ~ShapeInterface() = default;
 };
 
-// To regulate commonality amongst all shapes, 2D and 3D
+// To regulate commonality amongst all shapes, 2D and 3D - with a single calculate function
+// The "Manager class" in a way of both 2D and 3D shapes for convenience...
 class ManageShapeInterface {
 public:
     // May either be 2D area or 3D surface area
@@ -23,14 +24,14 @@ public:
     ~ManageShapeInterface() = default;
 };
 
-class ThreeDimensionalShapeInterface {
+class ThreeDimensionalShapeInterface : public ShapeInterface {
 public:
     ~ThreeDimensionalShapeInterface() = default;
     virtual double volume() = 0;
 };
 
 // But we can still have a dual area/volume, since a 3D 
-class Cuboid : public ShapeInterface, public ThreeDimensionalShapeInterface, public ManageShapeInterface {
+class Cuboid : public ThreeDimensionalShapeInterface, public ManageShapeInterface {
     double length;
     double width;
     double height;
@@ -66,9 +67,10 @@ public:
 
 // Class to calculate sum of all shape areas (separated responsibilities)
 class AreaCalculator {
-protected:
+private:
 	std::vector<ShapeInterface*> shapes_;
 public:
+    AreaCalculator() = default;
 	AreaCalculator(std::vector<ShapeInterface*> shapes) : shapes_(shapes) {}
 	double sum() const {
         double res = 0;
@@ -85,10 +87,21 @@ public:
 
 // Class to call volume methods...
 class VolumeCalculator : public AreaCalculator {
+private:
+	std::vector<ThreeDimensionalShapeInterface*> shapes_;
+public:
+    VolumeCalculator() = default;
+    VolumeCalculator(std::vector<ThreeDimensionalShapeInterface*> shapes) : shapes_(shapes) {}
     double sum() const {
-        // In order to be compatible with CalculatorOutputter...
-        // ... it must return a single sum value and not an array of volumes!
-        return 0;
+        double res = 0;
+        for(int i=0; i<shapes_.size(); i++) {
+            if(std::is_abstract_v<decltype(*shapes_[i])>) {
+                throw "Invalid shape\n";
+            }
+            // a header with only this class can remain stable
+            res += shapes_[i]->volume(); // very simple
+		}
+        return res;
     }
 };
 
@@ -118,5 +131,10 @@ int main() {
 	std::cout << area << "\n";
     std::cout << output.outputHTML() << "\n";
     std::cout << output.outputJSON() << "\n";
+    
+	std::vector<ThreeDimensionalShapeInterface*> second;
+    second.push_back(new Cuboid(5, 6, 8));
+    VolumeCalculator vols(second);
+    std::cout << "Volume: " << vols.sum() << "\n";
 	return 0;
 }
